@@ -2,9 +2,9 @@ package com.lve2code.restdemo.rest;
 
 import com.lve2code.restdemo.entity.Student;
 import jakarta.annotation.PostConstruct;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +33,32 @@ public class StudentRestController {
     // define endpoint for "/students/{studentId}" - return student at index
     @RequestMapping("/students/{studentId}")
     public Student getStudent(@PathVariable int studentId) {
+
+        // check the studentId against list size
+        if ((studentId >= students.size()) || (studentId < 0)) {
+            throw new StudentNotFoundException("Student id not found - " + studentId);
+        }
+
         return students.get(studentId);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<StudentErrorResponse> handleException(StudentNotFoundException exception) {
+        StudentErrorResponse resp = new StudentErrorResponse();
+        resp.setStatus(HttpStatus.NOT_FOUND.value());
+        resp.setMessage(exception.getMessage());
+        resp.setTimeStamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(resp, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<StudentErrorResponse> handleException(Exception exception) {
+        StudentErrorResponse resp = new StudentErrorResponse();
+        resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        resp.setMessage(exception.getMessage());
+        resp.setTimeStamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
     }
 }
