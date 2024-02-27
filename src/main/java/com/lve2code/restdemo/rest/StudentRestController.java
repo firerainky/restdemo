@@ -2,8 +2,6 @@ package com.lve2code.restdemo.rest;
 
 import com.lve2code.restdemo.entity.Student;
 import jakarta.annotation.PostConstruct;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -40,25 +38,5 @@ public class StudentRestController {
         }
 
         return students.get(studentId);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<StudentErrorResponse> handleException(StudentNotFoundException exception) {
-        StudentErrorResponse resp = new StudentErrorResponse();
-        resp.setStatus(HttpStatus.NOT_FOUND.value());
-        resp.setMessage(exception.getMessage());
-        resp.setTimeStamp(System.currentTimeMillis());
-
-        return new ResponseEntity<>(resp, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<StudentErrorResponse> handleException(Exception exception) {
-        StudentErrorResponse resp = new StudentErrorResponse();
-        resp.setStatus(HttpStatus.BAD_REQUEST.value());
-        resp.setMessage(exception.getMessage());
-        resp.setTimeStamp(System.currentTimeMillis());
-
-        return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
     }
 }
